@@ -323,6 +323,22 @@ body{background:#000;overflow:hidden;height:100vh;width:100vw;font-family:'Be Vi
 <button class="music-btn" id="musicBtn">🎶</button>
 
 <script>
+// ===== MOBILE AUDIO UNLOCK =====
+// iOS/Android yêu cầu audio phải được "unlock" bằng cách
+// gọi play()+pause() ngay trong lần touch đầu tiên của user
+let audioUnlocked = false;
+function unlockAudio(){
+  if(audioUnlocked) return;
+  const bgMusic = document.getElementById('bgMusic');
+  bgMusic.play().then(()=>{
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    audioUnlocked = true;
+  }).catch(()=>{});
+}
+document.addEventListener('touchstart', unlockAudio, {once:true});
+document.addEventListener('mousedown', unlockAudio, {once:true});
+
 // ===== LOADING SCREEN =====
 setTimeout(()=>{
   document.getElementById('loading').classList.add('hidden');
@@ -455,8 +471,8 @@ window.addEventListener('resize',()=>{ W=canvas.width=innerWidth; H=canvas.heigh
 // =====================================================
 const holdBtn    = document.getElementById('holdBtn');
 const progCircle = document.getElementById('progCircle');
-const CIRC   = 194.78;  // 2π × r=31
-const HOLD_MS= 1500;  // giữ lâu hơn — 3.2 giây
+const CIRC   = 194.78;
+const HOLD_MS= 2200;  // nhanh hơn — 2.2 giây
 let holding=false, holdStart=0, holdRAF=null, holdDone=false;
 
 function startHold(e){
@@ -508,16 +524,43 @@ window.addEventListener('mouseup',stopHold);
 window.addEventListener('touchend',stopHold);
 
 // =====================================================
+//  MUSIC — AUTO START (đặt trước doTransition để tránh lỗi)
+// =====================================================
+const musicBtn=document.getElementById('musicBtn');
+const audio=document.getElementById('bgMusic');
+let playing=false;
+
+function autoStartMusic(){
+  playing=true;
+  audio.play().catch(err=>console.log('Autoplay blocked:',err));
+  setTimeout(()=>{
+    musicBtn.style.display='flex';
+    musicBtn.textContent='🎶';
+    musicBtn.classList.add('playing');
+  }, 2400);
+}
+
+musicBtn.addEventListener('click',()=>{
+  playing=!playing;
+  if(playing){
+    audio.play();
+    musicBtn.textContent='🎶'; musicBtn.classList.add('playing');
+  } else {
+    audio.pause();
+    musicBtn.textContent='🎵'; musicBtn.classList.remove('playing');
+  }
+});
+
+// =====================================================
 //  TRANSITION → SCENE 2
 // =====================================================
 function doTransition(){
   holdBtn.classList.remove('pressing');
 
-  // Gọi nhạc NGAY LẬP TỨC — vẫn còn trong user gesture context
-  // (browser cho phép autoplay ngay sau khi user thả tay)
+  // Gọi nhạc NGAY — vẫn trong user gesture context
   autoStartMusic();
 
-  // Giữ nguyên chữ 1.2s trước khi tan — để người xem đọc
+  // Giữ nguyên chữ 1.2s trước khi tan
   setTimeout(()=>{
     gathering=false;
     particles.forEach(p=>{
@@ -604,39 +647,6 @@ function startPetals(){
     requestAnimationFrame(dp);
   })();
 }
-
-// =====================================================
-//  MUSIC — AUTO START
-// =====================================================
-const musicBtn=document.getElementById('musicBtn');
-const audio=document.getElementById('bgMusic');
-let playing=false, audioCtx=null, musicTimer=null;
-
-function autoStartMusic(){
-  playing=true;
-  // Phát nhạc NGAY (vẫn trong gesture context → browser cho phép)
-  const playPromise = audio.play();
-  }
-  // Hiện nút nhạc sau khi scene 2 xuất hiện (3.2s)
-  setTimeout(()=>{
-    musicBtn.style.display='flex';
-    musicBtn.textContent='🎶';
-    musicBtn.classList.add('playing');
-  }, 3300);
-
-
-musicBtn.addEventListener('click',()=>{
-  playing=!playing;
-  if(playing){
-    audio.play().catch(()=>playWebAudio());
-    musicBtn.textContent='🎶'; musicBtn.classList.add('playing');
-  } else {
-    audio.pause();
-    if(audioCtx){audioCtx.close();audioCtx=null;}
-    clearTimeout(musicTimer);
-    musicBtn.textContent='🎵'; musicBtn.classList.remove('playing');
-  }
-});
 
 // =====================================================
 //  GLOBE + FLOATING PHOTOS (canvas-based, looping drift)
