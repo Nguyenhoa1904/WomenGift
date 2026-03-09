@@ -257,7 +257,7 @@ body{background:#000;overflow:hidden;height:100vh;width:100vw;font-family:'Be Vi
 
 <!-- LOADING SCREEN -->
 <div id="loading">
-  <div class="ld-title">Món Quà Nhỏ 🌸</div>
+  <div class="ld-title">Món Quà Nhỏ Cho Mẹ 🌸</div>
   <div class="ld-sub">8 · 3 · 2026</div>
   <div class="ld-bar-wrap">
     <div class="ld-bar"></div>
@@ -277,7 +277,7 @@ body{background:#000;overflow:hidden;height:100vh;width:100vw;font-family:'Be Vi
         <circle class="track" cx="34" cy="34" r="31"/>
         <circle class="prog"  cx="34" cy="34" r="31" id="progCircle"/>
       </svg>
-      <div class="hold-inner">🌸</div>
+      <div class="hold-inner">💐</div>
     </div>
   </div>
 </div>
@@ -286,7 +286,7 @@ body{background:#000;overflow:hidden;height:100vh;width:100vw;font-family:'Be Vi
 <div id="scene2">
   <canvas id="petalCanvas"></canvas>
   <div class="globe-wrap" id="globeWrap">
-    <div class="globe-sphere" id="globeSphere">🌸</div>
+    <div class="globe-sphere" id="globeSphere">💐</div>
   </div>
 </div>
 
@@ -303,19 +303,19 @@ body{background:#000;overflow:hidden;height:100vh;width:100vw;font-family:'Be Vi
     <button class="letter-close" id="letterClose">✕</button>
     <span class="lc-icon">🌹</span>
     <div class="lc-date">8 tháng 3 · Ngày của phụ nữ</div>
-    <div class="lc-title">Gửi đến người con gái<br/>mà anh yêu thương ✨</div>
+    <div class="lc-title">Gửi đến người phụ nữ<br/>mà con yêu thương ✨</div>
     <div class="lc-divider"></div>
     <div class="lc-msg">
-      Hôm nay là ngày đặc biệt dành riêng cho em —<br/>
+      Hôm nay là ngày đặc biệt dành riêng cho mẹ —<br/>
       người luôn mang đến <strong>nụ cười và ánh sáng</strong><br/>
-      trong cuộc đời anh.<br/><br/>
-      Cảm ơn em vì đã luôn vì anh,<br/>
-      vì những điều nhỏ bé em làm mỗi ngày<br/>
-      khiến cuộc sống tẻ nhạt của anh trở nên <strong>thật đẹp hơn</strong>.<br/><br/>
-      Chúc em ngày 8/3 thật hạnh phúc 💕<br/>
-      luôn được yêu thương và rực rỡ như em vốn có.
+      trong cuộc đời con.<br/><br/>
+      Cảm ơn mẹ vì đã luôn vì con,<br/>
+      vì những điều to lớn mà mẹ làm mỗi ngày<br/>
+      khiến cuộc sống của con trở nên <strong>thật đẹp hơn</strong>.<br/><br/>
+      Chúc mẹ ngày 8/3 thật hạnh phúc 💐<br/>
+      luôn vui vẻ nha💐.
     </div>
-    <div class="lc-footer"> Mãi iu emm 🌸</div>
+    <div class="lc-footer">By Duy💐</div>
   </div>
 </div>
 
@@ -354,6 +354,7 @@ let H = canvas.height = window.innerHeight;
 
 const LINES  = ['Chúc Mừng','Ngày Quốc Tế Phụ Nữ'];
 const COLORS = ['#ff6b8a','#ffb3c6','#ff8fab','#ffc8d8','#ff4d75','#ffadc5','#ff99bb','#ffccd8'];
+
 
 /* Build target pixel positions from text */
 function getTargets(){
@@ -532,12 +533,17 @@ let playing=false;
 
 function autoStartMusic(){
   playing=true;
-  audio.play().catch(err=>console.log('Autoplay blocked:',err));
-  setTimeout(()=>{
+
+  audio.play().then(()=>{
     musicBtn.style.display='flex';
     musicBtn.textContent='🎶';
     musicBtn.classList.add('playing');
-  }, 2400);
+  }).catch(()=>{
+    // nếu bị chặn thì chờ người dùng chạm
+    document.body.addEventListener('touchstart',()=>{
+      audio.play();
+    },{once:true});
+  });
 }
 
 musicBtn.addEventListener('click',()=>{
@@ -651,7 +657,7 @@ function startPetals(){
 // =====================================================
 //  GLOBE + FLOATING PHOTOS (canvas-based, looping drift)
 // =====================================================
-const PHOTO_SRCS=['1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.png', '8.png', '9.png', '10.png']; // 10 ảnh tối đa
+const PHOTO_SRCS=['1.png', '2.png', '3.png', '4.png']; // 10 ảnh tối đa
 const PH_COLORS=['#b03060','#d4547a','#e8809a','#c0395a','#e0607a','#a02050','#ff6b8a','#c85070','#e890a8','#cc3058'];
 
 let globeActive=false;
